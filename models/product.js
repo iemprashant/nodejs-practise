@@ -11,6 +11,7 @@ const getProductsFromFile = (cb) => {
     if (err) {
       cb([]);
     } else {
+      console.log();
       cb(JSON.parse(fileContent));
     }
   });

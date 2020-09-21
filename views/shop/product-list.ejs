@@ -1,10 +1,40 @@
-<%- include('includes/head.ejs') %>
+<%- include('../includes/head.ejs') %>
     <link rel="stylesheet" href="/css/product.css">
 </head>
 
 <body>
-    <%- include('includes/navigation.ejs') %>
-
+    <header class="main-header">
+        <nav class="main-header__nav">
+          <ul class="main-header__item-list">
+            <li class="main-header__item">
+              <a class="<%= path === '/' ? 'active' : '' %>" href="/">Shop</a>
+            </li>
+            <li class="main-header__item">
+              <a class="<%= path === '/products' ? 'active' : '' %>" href="/products"
+                >Products</a
+              >
+            </li>
+            <li class="main-header__item">
+              <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
+            </li>
+            <li class="main-header__item">
+              <a
+                class="<%= path === '/admin/add-product' ? 'active' : '' %>"
+                href="/admin/add-product"
+                >Add Product
+              </a>
+            </li>
+            <li class="main-header__item">
+              <a
+                class="<%= path === '/admin/products' ? 'active' : '' %>"
+                href="/admin/products"
+                >Admin Products
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      
     <main>
         <% if (prods.length > 0) { %>
             <div class="grid">
@@ -31,4 +61,4 @@
             <h1>No Products Found!</h1>
         <% } %>
     </main>
-<%- include('includes/end.ejs') %>
+<%- include('../includes/end.ejs') %>
