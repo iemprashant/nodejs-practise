@@ -1,3 +1,4 @@
+const Cart = require('../models/cart')
 const Product = require('../models/product')
 
 exports.getAddProduct = (req, res, next) => {
@@ -60,4 +61,10 @@ exports.getProducts = (req, res, next) => {
       path: '/admin/products',
     })
   })
+}
+exports.postDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId
+  Product.deleteById(prodId)
+  console.log('product deleted')
+  res.redirect('/admin/products')
 }
