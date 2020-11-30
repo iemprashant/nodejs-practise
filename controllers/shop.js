@@ -3,19 +3,21 @@ const Cart = require('../models/cart')
 
 const path = require('path')
 
-exports.getProducts = (req, res, next) => {
-  Product.findAll().then((products) => {
-    res
-      .render('shop/product-list', {
+exports.getProductsItems = (req, res, next) => {
+  Product.findAll()
+    .then((products) => {
+      res.render('shop/product-list', {
         prods: products,
         pageTitle: 'All Products',
         path: '/products',
       })
-      .catch((err) => console.log(err))
-  })
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
-exports.getProduct = (req, res, next) => {
+exports.getProductitem = (req, res, next) => {
   const prodId = req.params.productId
   Product.findByPk(prodId)
     .then((product) => {
@@ -38,7 +40,7 @@ exports.getIndex = (req, res, next) => {
       .catch((err) => console.log(err))
   })
 }
-exports.getCart = (req, res, next) => {
+exports.getCartItem = (req, res, next) => {
   req.user
     .getCart()
     .then((cart) => {
@@ -92,6 +94,20 @@ exports.postOrder = (req, res, next) => {
     .getCart()
     .then((cart) => {
       return cart.getProducts()
+    })
+    .then((products) => {
+      return req.user
+        .createOrder()
+        .then((order) =>
+          order.addProducts((product) => {
+            product.orderItem = { quantity: product.cartItem.quantity }
+            return product
+          })
+        )
+        .catch((err) => console.log(err))
+    })
+    .then((result) => {
+      res.redirect('/orders')
     })
     .catch((err) => {
       console.log(err)
