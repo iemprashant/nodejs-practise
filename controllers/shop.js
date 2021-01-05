@@ -57,6 +57,7 @@ exports.getCartItem = (req, res, next) => {
     })
     .catch((err) => console.log(err))
 }
+
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId
   let fetchedCart
@@ -89,36 +90,6 @@ exports.postCart = (req, res, next) => {
     })
     .catch((err) => console.log(err))
 }
-exports.postOrder = (req, res, next) => {
-  req.user
-    .getCart()
-    .then((cart) => {
-      return cart.getProducts()
-    })
-    .then((products) => {
-      return req.user
-        .createOrder()
-        .then((order) =>
-          order.addProducts((product) => {
-            product.orderItem = { quantity: product.cartItem.quantity }
-            return product
-          })
-        )
-        .catch((err) => console.log(err))
-    })
-    .then((result) => {
-      res.redirect('/orders')
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-}
-exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    path: '/orders',
-    pageTitle: 'Your Orders',
-  })
-}
 exports.postCartDelete = (req, res, next) => {
   const prodId = req.body.productId
   req.user
@@ -135,9 +106,47 @@ exports.postCartDelete = (req, res, next) => {
       console.log(err)
     })
 }
-exports.getCheckout = (req, res, next) => {
-  res.render('shop/checkout', {
-    path: '/checkout',
-    pageTitle: 'Checkout',
-  })
+
+exports.postOrder = (req, res, next) => {
+  let fetchedCart
+  req.user
+    .getCart()
+    .then((cart) => {
+      fetchedCart = cart
+      return cart.getProducts()
+    })
+    .then((products) => {
+      return req.user
+        .createOrder()
+        .then((order) => {
+          return order.addProducts(
+            products.map((product) => {
+              product.orderItem = { quantity: product.cartItem.quantity }
+              return product
+            })
+          )
+        })
+        .catch((err) => console.log(err))
+    })
+    .then((result) => {
+      return fetchedCart.setProducts(null)
+    })
+    .then((result) => {
+      res.redirect('/orders')
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+exports.getOrders = (req, res, next) => {
+  req.user
+    .getOrders({ include: ['products'] })
+    .then((orders) => {
+      res.render('shop/orders', {
+        path: '/orders',
+        pageTitle: 'Your Orders',
+        orders: orders,
+      })
+    })
+    .catch((err) => console.log(err))
 }
